@@ -15,14 +15,12 @@ import com.shihang.pulltorefresh.PullRecyclerView.LoadListener;
 import com.yanzhenjie.recyclerview.swipe.SwipeMenu;
 import com.yanzhenjie.recyclerview.swipe.SwipeMenuCreator;
 import com.yanzhenjie.recyclerview.swipe.SwipeMenuItem;
-import com.yanzhenjie.recyclerview.swipe.SwipeMenuRecyclerView;
 import java.util.ArrayList;
 import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
 
     private PullRecyclerView pullView;
-    private SwipeMenuRecyclerView mRecyclerView;
 
     private LayoutInflater inflater;
     private TextAdapter adapter;
@@ -36,17 +34,36 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         inflater = LayoutInflater.from(this);
 
-        pullView = (PullRecyclerView) findViewById(R.id.pullView);
-        pullView.setPullListener(refreshListener);
+        pullView = findViewById(R.id.pullView);
+        pullView.setPullListener(new PullRecyclerView.PullListener() {
+            @Override
+            public void onLoadData(final boolean isRefresh, final int page) {
+                handler.postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        List<String> list = new ArrayList<>();
+                            for (int i = 15; i > 0; i--) {
+                                list.add("测试" + ((page == 0 ? 1:page)*15 - i + 1));
+                            }
+                            if (page == 1) {
+                            adapter.resetDatas(list);
+                        } else {
+                            adapter.addDatas(list);
+                        }
+                        pullView.loadFinish(isRefresh, page < 5);
+                    }
+                }, 2000);
+            }
+        });
         pullView.setPullEnable(true, true);
-        mRecyclerView = pullView.getSwipeRecyclerView();
-        mRecyclerView.setLayoutManager(new GridLayoutManager(this, 1));
+        pullView.getSwipeRecyclerView().setLayoutManager(new GridLayoutManager(this, 1));
 
-        mRecyclerView.setSwipeMenuCreator(swipeMenuCreator);
+        pullView.getSwipeRecyclerView().setSwipeMenuCreator(swipeMenuCreator);
 
         //mRecyclerView.setSwipeItemClickListener(mItemClickListener); // RecyclerView Item点击监听。
         adapter = new TextAdapter();
-        mRecyclerView.setAdapter(adapter);
+        pullView.setAdapter(adapter);
+        pullView.pullRefreshing();
     }
 
 
@@ -72,36 +89,6 @@ public class MainActivity extends AppCompatActivity {
     };
 
 
-    private LoadListener refreshListener = new LoadListener() {
-
-        private void loadData(final int start) {
-            handler.postDelayed(new Runnable() {
-                @Override
-                public void run() {
-                    List<String> list = new ArrayList<>();
-                    for (int i = start; i < start + 15; i++) {
-                        list.add("测试" + i);
-                    }
-                    if (start == 0) {
-                        adapter.resetDatas(list);
-                    } else {
-                        adapter.addDatas(list);
-                    }
-                    mRecyclerView.loadMoreFinish(true, start < 60);
-                }
-            }, 2000);
-        }
-
-        @Override
-        public void onRefresh() {
-            loadData(0);
-        }
-
-        @Override
-        public void onLoadMore() {
-            loadData(adapter.getItemCount());
-        }
-    };
 
     public class TextAdapter extends RecyclerView.Adapter<MainActivity.ViewHolder> {
 

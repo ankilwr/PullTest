@@ -27,9 +27,7 @@ import android.view.ViewGroup;
 import java.lang.reflect.Field;
 import java.util.List;
 
-/**
- * Created by YanZhenjie on 2017/7/20.
- */
+
 public class SwipeAdapterWrapper extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
     private static final int BASE_ITEM_TYPE_HEADER = 100000;
@@ -122,14 +120,15 @@ public class SwipeAdapterWrapper extends RecyclerView.Adapter<RecyclerView.ViewH
         mSwipeMenuCreator.onCreateMenu(swipeLeftMenu, swipeRightMenu, viewType);
 
         int leftMenuCount = swipeLeftMenu.getMenuItems().size();
+        int rightMenuCount = swipeRightMenu.getMenuItems().size();
+        if(leftMenuCount == 0 && rightMenuCount == 0) return viewHolder;
+
         if (leftMenuCount > 0) {
             SwipeMenuView swipeLeftMenuView = (SwipeMenuView) swipeMenuLayout.findViewById(R.id.swipe_left);
             // noinspection WrongConstant
             swipeLeftMenuView.setOrientation(swipeLeftMenu.getOrientation());
             swipeLeftMenuView.createMenu(swipeLeftMenu, swipeMenuLayout, mSwipeMenuItemClickListener, SwipeMenuRecyclerView.LEFT_DIRECTION);
         }
-
-        int rightMenuCount = swipeRightMenu.getMenuItems().size();
         if (rightMenuCount > 0) {
             SwipeMenuView swipeRightMenuView = (SwipeMenuView) swipeMenuLayout.findViewById(R.id.swipe_right);
             // noinspection WrongConstant

@@ -31,9 +31,7 @@ import android.widget.TextView;
 
 import java.util.List;
 
-/**
- * Created by Yan Zhenjie on 2016/7/26.
- */
+
 public class SwipeMenuView extends LinearLayout implements View.OnClickListener {
 
     private RecyclerView.ViewHolder mAdapterVIewHolder;

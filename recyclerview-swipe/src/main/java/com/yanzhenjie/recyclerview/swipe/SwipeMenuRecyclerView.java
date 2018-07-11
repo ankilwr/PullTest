@@ -28,8 +28,8 @@ import android.view.ViewConfiguration;
 import android.view.ViewGroup;
 import android.view.ViewParent;
 
+import com.shihang.pulltorefresh.inter.NotifyListener;
 import com.shihang.pulltorefresh.view.LoadMoreView;
-import com.shihang.pulltorefresh.view.SwipeRefreshLayout;
 import com.yanzhenjie.recyclerview.swipe.touch.DefaultItemTouchHelper;
 import com.yanzhenjie.recyclerview.swipe.touch.OnItemMoveListener;
 import com.yanzhenjie.recyclerview.swipe.touch.OnItemMovementListener;
@@ -40,9 +40,7 @@ import java.lang.annotation.RetentionPolicy;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * Created by Yan Zhenjie on 2016/7/27.
- */
+
 public class SwipeMenuRecyclerView extends RecyclerView {
 
     /**
@@ -75,11 +73,17 @@ public class SwipeMenuRecyclerView extends RecyclerView {
 
     private DefaultItemTouchHelper mDefaultItemTouchHelper;
 
+
     private SwipeMenuCreator mSwipeMenuCreator;
     private SwipeMenuItemClickListener mSwipeMenuItemClickListener;
     private SwipeItemClickListener mSwipeItemClickListener;
 
+    private NotifyListener notifyListener;
     private SwipeAdapterWrapper mAdapterWrapper;
+
+    public void setNotifyListener(NotifyListener notifyListener){
+        this.notifyListener = notifyListener;
+    }
 
     public SwipeMenuRecyclerView(Context context) {
         this(context, null);
@@ -178,7 +182,7 @@ public class SwipeMenuRecyclerView extends RecyclerView {
      *
      * @param viewHolder the ViewHolder to start dragging. It must be a direct child of RecyclerView.
      */
-    public void startDrag(RecyclerView.ViewHolder viewHolder) {
+    public void startDrag(ViewHolder viewHolder) {
         initializeItemTouchHelper();
         this.mDefaultItemTouchHelper.startDrag(viewHolder);
     }
@@ -188,7 +192,7 @@ public class SwipeMenuRecyclerView extends RecyclerView {
      *
      * @param viewHolder the ViewHolder to start swiping. It must be a direct child of RecyclerView.
      */
-    public void startSwipe(RecyclerView.ViewHolder viewHolder) {
+    public void startSwipe(ViewHolder viewHolder) {
         initializeItemTouchHelper();
         this.mDefaultItemTouchHelper.startSwipe(viewHolder);
     }
@@ -296,6 +300,7 @@ public class SwipeMenuRecyclerView extends RecyclerView {
         return mAdapterWrapper.getOriginAdapter();
     }
 
+
     @Override
     public void setAdapter(Adapter adapter) {
         if (mAdapterWrapper != null) {
@@ -337,35 +342,41 @@ public class SwipeMenuRecyclerView extends RecyclerView {
     private AdapterDataObserver mAdapterDataObserver = new AdapterDataObserver() {
         @Override
         public void onChanged() {
+            if(notifyListener != null) notifyListener.notifyDataSetChanged(mAdapterWrapper.getOriginAdapter().getItemCount());
             mAdapterWrapper.notifyDataSetChanged();
         }
 
         @Override
         public void onItemRangeChanged(int positionStart, int itemCount) {
+            if(notifyListener != null) notifyListener.notifyDataSetChanged(mAdapterWrapper.getOriginAdapter().getItemCount());
             positionStart += getHeaderItemCount();
             mAdapterWrapper.notifyItemRangeChanged(positionStart, itemCount);
         }
 
         @Override
         public void onItemRangeChanged(int positionStart, int itemCount, Object payload) {
+            if(notifyListener != null) notifyListener.notifyDataSetChanged(mAdapterWrapper.getOriginAdapter().getItemCount());
             positionStart += getHeaderItemCount();
             mAdapterWrapper.notifyItemRangeChanged(positionStart, itemCount, payload);
         }
 
         @Override
         public void onItemRangeInserted(int positionStart, int itemCount) {
+            if(notifyListener != null) notifyListener.notifyDataSetChanged(mAdapterWrapper.getOriginAdapter().getItemCount());
             positionStart += getHeaderItemCount();
             mAdapterWrapper.notifyItemRangeInserted(positionStart, itemCount);
         }
 
         @Override
         public void onItemRangeRemoved(int positionStart, int itemCount) {
+            if(notifyListener != null) notifyListener.notifyDataSetChanged(mAdapterWrapper.getOriginAdapter().getItemCount());
             positionStart += getHeaderItemCount();
             mAdapterWrapper.notifyItemRangeRemoved(positionStart, itemCount);
         }
 
         @Override
         public void onItemRangeMoved(int fromPosition, int toPosition, int itemCount) {
+            if(notifyListener != null) notifyListener.notifyDataSetChanged(mAdapterWrapper.getOriginAdapter().getItemCount());
             fromPosition += getHeaderItemCount();
             toPosition += getHeaderItemCount();
             mAdapterWrapper.notifyItemMoved(fromPosition, toPosition);
@@ -610,15 +621,11 @@ public class SwipeMenuRecyclerView extends RecyclerView {
 
     private int mScrollState = -1;
 
-    private boolean isMoreLoading = false;
-
+    private boolean isMoreLoading, isRefreshing = false;
     private boolean loadMoreEnable;
-    private boolean headerEnable;
-    private boolean hasMore;
-    private SwipeRefreshLayout swipeRefreshLayout;
+    private boolean loadMoveIsAdd, hasMore;
     private LoadMoreAction mLoadMoreAction;
     private LoadMoreListener mLoadMoreListener;
-    private boolean haveLoadMoreView;
 
     @Override
     public void onScrollStateChanged(int state) {
@@ -627,8 +634,7 @@ public class SwipeMenuRecyclerView extends RecyclerView {
 
     @Override
     public void onScrolled(int dx, int dy) {
-        if (!loadMoreEnable || isMoreLoading || !hasMore) return;
-        if (swipeRefreshLayout != null && swipeRefreshLayout.isRefreshing()) return;
+        if (!loadMoreEnable || isMoreLoading || !hasMore || isRefreshing) return;
         LayoutManager layoutManager = getLayoutManager();
         if (layoutManager != null && layoutManager instanceof LinearLayoutManager) {
             LinearLayoutManager linearLayoutManager = (LinearLayoutManager) layoutManager;
@@ -659,111 +665,128 @@ public class SwipeMenuRecyclerView extends RecyclerView {
     }
 
     private void dispatchLoadMore() {
-        isMoreLoading = true;
-        if (swipeRefreshLayout != null) swipeRefreshLayout.setEnabled(false);
-        if (mLoadMoreAction != null) mLoadMoreAction.onLoading();
-        if (mLoadMoreListener != null) mLoadMoreListener.onLoadMore();
-    }
-
-    public void setRefreshLayout(SwipeRefreshLayout swipeRefreshLayout) {
-        this.swipeRefreshLayout = swipeRefreshLayout;
-    }
-
-    public void setLoadMoreEnable(boolean headerEnable, boolean enable) {
-        this.loadMoreEnable = enable;
-        this.headerEnable = headerEnable;
-        mLoadMoreAction = new LoadMoreView(getContext());
-    }
-
-    /**
-     * Load more view.
-     */
-    public void setLoadMoreView(LoadMoreAction loadMoreAction) {
-        if (loadMoreAction == null) {
-            //if (mLoadMoreAction != null) removeFooterView((View) mLoadMoreAction);
-            if(haveLoadMoreView){
-                removeFooterView((View) mLoadMoreAction);
-                haveLoadMoreView = false;
-            }
-        } else {
-            addFooterView((View) loadMoreAction);
-            mLoadMoreAction = loadMoreAction;
-            haveLoadMoreView = true;
+        if(!isMoreLoading) {
+            isMoreLoading = true;
+            if (mLoadMoreAction != null) mLoadMoreAction.onLoading();
+            if (mLoadMoreListener != null) mLoadMoreListener.onLoadMore();
         }
-        //mLoadMoreAction = loadMoreAction;
+    }
+
+    public void setLoadMoreEnable(boolean loadMoreEnable, LoadMoreAction loadMoreAction) {
+        this.loadMoreEnable = loadMoreEnable;
+        if (loadMoreEnable) {
+            if (loadMoreAction == null) {
+                mLoadMoreAction = new LoadMoreView(getContext());
+            } else {
+                mLoadMoreAction = loadMoreAction;
+            }
+            ((View) mLoadMoreAction).setVisibility(View.GONE);
+            ViewGroup.LayoutParams params = new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+            ((View) mLoadMoreAction).setLayoutParams(params);
+            ((View) mLoadMoreAction).setOnClickListener(new OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    dispatchLoadMore();
+                }
+            });
+        }
     }
 
     /**
-     * Load more listener.
+     * Load more view
+     */
+    private void setLoadMoreView(boolean visibleEnable) {
+        if (visibleEnable) {
+            if (loadMoveIsAdd) return;//防止重复添加
+            addFooterView((View) mLoadMoreAction);
+            loadMoveIsAdd = true;
+        } else {
+            if (loadMoveIsAdd) {//防止重复移除
+                removeFooterView((View) mLoadMoreAction);
+                loadMoveIsAdd = false;
+            }
+        }
+    }
+
+    /**
+     * Load more listener
      */
     public void setLoadMoreListener(LoadMoreListener loadMoreListener) {
         mLoadMoreListener = loadMoreListener;
     }
 
+
+//--------------------------------------  START  ---------------------------------------
+
+    /**
+     * 刷新中(隐藏加载更多item)
+     */
+    public void setRefreshIngState() {
+        setLoadMoreView(false);
+        isRefreshing = true;
+    }
+
+    public void setRefreshError() {
+        //之前已经有加载更多才需要重新设置加载更多
+        if (loadMoreEnable && mLoadMoreAction != null && ((View)mLoadMoreAction).getVisibility() == View.VISIBLE){
+            setLoadMoreView(true);
+        }
+        isRefreshing = false;
+    }
+
+    //刷新成功等于加载数据成功(---loadMoreFinish()---)
+    public void setRefreshSuccess(boolean hasMore) {
+        if (loadMoreEnable) loadMoreFinish(hasMore, false);
+        isRefreshing = false;
+    }
+
+
     /**
      * Load more done.
      *
-     * @param hasMore has more data ?
+     * @param noDataVisibleMore : 没有更多数据的时候是否显示提示item
      */
-    public final void loadMoreFinish(boolean isSuccess, boolean hasMore) {
+    public final void loadMoreFinish(boolean hasMore, boolean noDataVisibleMore) {
         this.isMoreLoading = false;
         this.hasMore = hasMore;
-        if (swipeRefreshLayout != null) {
-            swipeRefreshLayout.setEnabled(headerEnable);
-            if(swipeRefreshLayout.isRefreshing()){
-                swipeRefreshLayout.setRefreshResult(isSuccess);
-            }
-        }
+        if (mLoadMoreAction != null) ((View)mLoadMoreAction).setVisibility(View.VISIBLE);
         if (hasMore) {
-//            if (mLoadMoreAction == null && loadMoreEnable) {
-//                LoadMoreView defaultLoadMoreView = new LoadMoreView(getContext());
-//                setLoadMoreView(defaultLoadMoreView);
-//            }
-            if(!haveLoadMoreView) setLoadMoreView(mLoadMoreAction);
+            setLoadMoreView(true);
             if (mLoadMoreAction != null) mLoadMoreAction.onLoadFinish(hasMore);
         } else {
-            if (mLoadMoreAction != null) mLoadMoreAction.onLoadFinish(hasMore);
-            //setLoadMoreView(null);
+            if (noDataVisibleMore) {
+                if (mLoadMoreAction != null) mLoadMoreAction.onLoadFinish(hasMore);
+            } else {
+                if (mLoadMoreAction != null) ((View)mLoadMoreAction).setVisibility(View.GONE);
+                setLoadMoreView(false);
+            }
         }
     }
 
-    /**
-     * Called when data is loaded incorrectly.
-     *
-     * @param errorCode    Error code, will be passed to the LoadView, you can according to it to customize the prompt information.
-     * @param errorMessage Error message.
-     */
+
     public void loadMoreError(int errorCode, String errorMessage) {
         isMoreLoading = false;
-        if (swipeRefreshLayout != null) swipeRefreshLayout.setEnabled(headerEnable);
         if (mLoadMoreAction != null) {
             mLoadMoreAction.onLoadError(errorCode, errorMessage);
         }
     }
 
-    public interface LoadMoreAction {
 
-        /**
-         * Show progress.
-         */
+    /**
+     * 由LoadMoreView实现
+     */
+    public interface LoadMoreAction {
         void onLoading();
 
-        /**
-         * Load finish, handle result.
-         */
         void onLoadFinish(boolean hasMore);
 
-        /**
-         * Load error.
-         */
         void onLoadError(int errorCode, String errorMessage);
     }
 
+    /**
+     * 由需要加载更多监听的页面实现
+     */
     public interface LoadMoreListener {
-
-        /**
-         * More data should be requested.
-         */
         void onLoadMore();
     }
 

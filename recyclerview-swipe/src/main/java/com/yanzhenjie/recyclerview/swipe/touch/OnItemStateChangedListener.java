@@ -18,9 +18,7 @@ package com.yanzhenjie.recyclerview.swipe.touch;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.helper.ItemTouchHelper;
 
-/**
- * Created by Yan Zhenjie on 2016/8/12.
- */
+
 public interface OnItemStateChangedListener {
 
     /**

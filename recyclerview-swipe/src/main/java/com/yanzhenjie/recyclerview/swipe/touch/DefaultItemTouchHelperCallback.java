@@ -21,9 +21,7 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.helper.ItemTouchHelper;
 
-/**
- * Created by Yolanda on 2016/4/19.
- */
+
 public class DefaultItemTouchHelperCallback extends ItemTouchHelper.Callback {
 
     private OnItemMovementListener onItemMovementListener;

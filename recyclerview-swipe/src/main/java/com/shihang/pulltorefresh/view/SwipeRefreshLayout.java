@@ -198,6 +198,23 @@ public class SwipeRefreshLayout extends ViewGroup implements NestedScrollingPare
         }
     };
 
+    private AnimationListener mRefreshFinishListener = new AnimationListener() {
+        @Override
+        public void onAnimationStart(Animation animation) {
+        }
+
+        @Override
+        public void onAnimationRepeat(Animation animation) {
+        }
+
+        @SuppressLint("NewApi")
+        @Override
+        public void onAnimationEnd(Animation animation) {
+            setRefreshing(false, false /* notify */);
+            reset();
+        }
+    };
+
     void reset() {
         mCircleView.setImageDrawable(mProgress);
         mCircleView.clearAnimation();
@@ -414,7 +431,7 @@ public class SwipeRefreshLayout extends ViewGroup implements NestedScrollingPare
                 endTarget = mSpinnerOffsetEnd;
             }
             setTargetOffsetTopAndBottom(endTarget - mCurrentTargetOffsetTop);
-            mNotify = false;
+            mNotify = true;
             startScaleUpAnimation(mRefreshListener);
         } else {
             setRefreshing(refreshing, false /* notify */);
@@ -426,7 +443,10 @@ public class SwipeRefreshLayout extends ViewGroup implements NestedScrollingPare
         new Handler().postDelayed(new Runnable() {
             @Override
             public void run() {
-                setRefreshing(false, false /* notify */);
+                //setRefreshing是先更新状态在启动消失动画
+                //setRefreshing(false, false /* notify */);
+                //启动消失动画，消失动画执行完毕之后才去更新刷新状态(refreshing)
+                startScaleDownAnimation(mRefreshFinishListener);
             }
         }, 500);
     }
@@ -472,8 +492,8 @@ public class SwipeRefreshLayout extends ViewGroup implements NestedScrollingPare
             mRefreshing = refreshing;
             if (mRefreshing) {
                 animateOffsetToCorrectPosition(mCurrentTargetOffsetTop, mRefreshListener);
-            } else {
-                startScaleDownAnimation(mRefreshListener);
+            } else{
+                //startScaleDownAnimation(mRefreshListener);
             }
         }
     }

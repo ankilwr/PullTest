@@ -18,9 +18,7 @@ package com.yanzhenjie.recyclerview.swipe;
 import android.view.View;
 import android.widget.OverScroller;
 
-/**
- * Created by Yan Zhenjie on 2016/7/22.
- */
+
 class SwipeRightHorizontal extends SwipeHorizontal {
 
     public SwipeRightHorizontal(View menuView) {

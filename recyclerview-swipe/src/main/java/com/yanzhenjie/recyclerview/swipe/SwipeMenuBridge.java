@@ -25,9 +25,7 @@ import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-/**
- * Created by YanZhenjie on 2017/7/20.
- */
+
 public final class SwipeMenuBridge {
 
     @SwipeMenuRecyclerView.DirectionMode

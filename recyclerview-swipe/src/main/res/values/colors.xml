@@ -21,5 +21,6 @@
     <color name="recycler_swipe_color_loading_color1">#55777777</color>
     <color name="recycler_swipe_color_loading_color2">#B1777777</color>
     <color name="recycler_swipe_color_loading_color3">#FF777777</color>
+    <color name="loadingColor">#c8000b</color>
 
 </resources>

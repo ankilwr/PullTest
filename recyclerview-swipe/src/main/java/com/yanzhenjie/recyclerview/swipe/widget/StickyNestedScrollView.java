@@ -29,7 +29,6 @@ import java.util.List;
 
 /**
  * <p>https://github.com/yanzhenjie/StickyScrollView</p>
- * Created by YanZhenjie on 2017/7/20.
  */
 public class StickyNestedScrollView extends NestedScrollView {
 

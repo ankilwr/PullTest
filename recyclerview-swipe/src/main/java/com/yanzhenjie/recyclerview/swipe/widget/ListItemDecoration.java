@@ -18,11 +18,7 @@ package com.yanzhenjie.recyclerview.swipe.widget;
 import android.support.annotation.ColorInt;
 
 /**
- * <p>
- * RecyclerView's Item Split Line.
- * </p>
- * Created by Yan Zhenjie on 2016/7/27.
- *
+ * <p> RecyclerView's Item Split Line. </p>
  * @deprecated use {@link DefaultItemDecoration} instead.
  */
 @Deprecated

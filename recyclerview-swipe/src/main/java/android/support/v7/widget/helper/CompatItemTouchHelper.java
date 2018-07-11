@@ -15,12 +15,10 @@
  */
 package android.support.v7.widget.helper;
 
-/**
- * Created by Yan Zhenjie on 2016/8/1.
- */
+
 public class CompatItemTouchHelper extends ItemTouchHelper {
 
-    public CompatItemTouchHelper(ItemTouchHelper.Callback callback) {
+    public CompatItemTouchHelper(Callback callback) {
         super(callback);
     }
 
@@ -29,7 +27,7 @@ public class CompatItemTouchHelper extends ItemTouchHelper {
      *
      * @return {@link Callback}
      */
-    public ItemTouchHelper.Callback getCallback() {
+    public Callback getCallback() {
         return mCallback;
     }
 }

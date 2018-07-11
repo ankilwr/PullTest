@@ -30,9 +30,7 @@ import com.yanzhenjie.recyclerview.swipe.SwipeMenuRecyclerView;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * Created by YanZhenjie on 2017/8/14.
- */
+
 public class DefaultItemDecoration extends RecyclerView.ItemDecoration {
 
     private Drawable mDivider;

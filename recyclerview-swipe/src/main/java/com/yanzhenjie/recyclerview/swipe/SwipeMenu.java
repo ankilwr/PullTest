@@ -24,9 +24,7 @@ import java.lang.annotation.RetentionPolicy;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * Created by Yan Zhenjie on 2016/7/22.
- */
+
 public class SwipeMenu {
 
     @IntDef({HORIZONTAL, VERTICAL})

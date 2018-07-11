@@ -27,9 +27,7 @@ import android.support.annotation.Px;
 import android.support.annotation.StyleRes;
 import android.support.v4.content.ContextCompat;
 
-/**
- * Created by Yan Zhenjie on 2016/7/26.
- */
+
 public class SwipeMenuItem {
 
     private Context mContext;

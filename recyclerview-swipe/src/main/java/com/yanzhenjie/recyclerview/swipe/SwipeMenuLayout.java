@@ -28,9 +28,7 @@ import android.widget.FrameLayout;
 import android.widget.OverScroller;
 import android.widget.TextView;
 
-/**
- * Created by Yan Zhenjie on 2016/7/27.
- */
+
 public class SwipeMenuLayout extends FrameLayout implements SwipeSwitch {
 
     public static final int DEFAULT_SCROLLER_DURATION = 200;

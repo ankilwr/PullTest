@@ -11,8 +11,6 @@ package com.yanzhenjie.recyclerview.swipe.widget;
 import android.support.annotation.ColorInt;
 
 /**
- * Created by YanZhenjie on 2017/7/6.
- *
  * @deprecated use {@link DefaultItemDecoration} instead.
  */
 @Deprecated
