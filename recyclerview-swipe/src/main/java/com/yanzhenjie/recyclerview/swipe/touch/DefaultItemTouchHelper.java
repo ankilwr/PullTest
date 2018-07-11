@@ -15,10 +15,10 @@
  */
 package com.yanzhenjie.recyclerview.swipe.touch;
 
-import android.support.v7.widget.helper.CompatItemTouchHelper;
+import android.support.v7.widget.helper.ItemTouchHelper;
 
 
-public class DefaultItemTouchHelper extends CompatItemTouchHelper {
+public class DefaultItemTouchHelper extends ItemTouchHelper {
 
     private DefaultItemTouchHelperCallback mDefaultItemTouchHelperCallback;
 
@@ -34,7 +34,7 @@ public class DefaultItemTouchHelper extends CompatItemTouchHelper {
      */
     private DefaultItemTouchHelper(DefaultItemTouchHelperCallback callback) {
         super(callback);
-        mDefaultItemTouchHelperCallback = (DefaultItemTouchHelperCallback) getCallback();
+        mDefaultItemTouchHelperCallback = callback;
     }
 
     /**

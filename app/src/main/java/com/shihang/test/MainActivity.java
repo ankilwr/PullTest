@@ -10,11 +10,15 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
+import android.widget.Toast;
+
 import com.shihang.pulltorefresh.PullRecyclerView;
-import com.shihang.pulltorefresh.PullRecyclerView.LoadListener;
 import com.yanzhenjie.recyclerview.swipe.SwipeMenu;
+import com.yanzhenjie.recyclerview.swipe.SwipeMenuBridge;
 import com.yanzhenjie.recyclerview.swipe.SwipeMenuCreator;
 import com.yanzhenjie.recyclerview.swipe.SwipeMenuItem;
+import com.yanzhenjie.recyclerview.swipe.SwipeMenuItemClickListener;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -59,6 +63,7 @@ public class MainActivity extends AppCompatActivity {
         pullView.getSwipeRecyclerView().setLayoutManager(new GridLayoutManager(this, 1));
 
         pullView.getSwipeRecyclerView().setSwipeMenuCreator(swipeMenuCreator);
+        pullView.getSwipeRecyclerView().setSwipeMenuItemClickListener(menuClick);
 
         //mRecyclerView.setSwipeItemClickListener(mItemClickListener); // RecyclerView Item点击监听。
         adapter = new TextAdapter();
@@ -88,6 +93,14 @@ public class MainActivity extends AppCompatActivity {
         }
     };
 
+
+    private SwipeMenuItemClickListener menuClick = new SwipeMenuItemClickListener() {
+        @Override
+        public void onItemClick(SwipeMenuBridge menuBridge) {
+            menuBridge.closeMenu();
+            Toast.makeText(MainActivity.this, menuBridge.getPosition() == 0 ? "删除":"添加", 1000)
+        }
+    };
 
 
     public class TextAdapter extends RecyclerView.Adapter<MainActivity.ViewHolder> {
