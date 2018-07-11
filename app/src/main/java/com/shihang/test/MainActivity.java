@@ -98,7 +98,7 @@ public class MainActivity extends AppCompatActivity {
         @Override
         public void onItemClick(SwipeMenuBridge menuBridge) {
             menuBridge.closeMenu();
-            Toast.makeText(MainActivity.this, menuBridge.getPosition() == 0 ? "删除":"添加", 1000)
+            Toast.makeText(MainActivity.this, menuBridge.getPosition() == 0 ? "删除":"添加", Toast.LENGTH_SHORT).show();
         }
     };
 
