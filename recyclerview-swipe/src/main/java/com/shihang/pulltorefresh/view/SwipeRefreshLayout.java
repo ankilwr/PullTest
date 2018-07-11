@@ -562,13 +562,6 @@ public class SwipeRefreshLayout extends ViewGroup implements NestedScrollingPare
         mProgress.setBackgroundColor(color);
     }
 
-    /**
-     * @deprecated Use {@link #setColorSchemeResources(int...)}
-     */
-    @Deprecated
-    public void setColorScheme(@ColorInt int... colors) {
-        setColorSchemeResources(colors);
-    }
 
     /**
      * Set the color resources used in the progress animation from color resources.

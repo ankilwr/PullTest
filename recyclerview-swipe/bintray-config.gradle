@@ -1,0 +1,23 @@
+ext {
+    bintrayRepo = "shihang"
+    bintrayName = "pullview"
+
+    libraryName = "pullview"
+    publishedGroupId = "com.shihang"
+    artifact = "recyclerview-swipe"
+    libraryVersion = "1.0.0"
+
+    libraryDescription = "a nice multifunction recyclerview"
+
+    siteUrl = "https://github.com/ankilwr/PullTest"
+    gitUrl = "https://github.com/ankilwr/PullTest.git"
+
+
+    developerId = "shihang"
+    developerName = "shihang"
+    developerEmail = "ankilwr@qq.com"
+
+    licenseName = "Apache软件许可证,2.0版本的"
+    licenseUrl = "http://www.apache.org/licenses/LICENSE-2.0.txt"
+    allLicenses = ("apache - 2.0")
+}
